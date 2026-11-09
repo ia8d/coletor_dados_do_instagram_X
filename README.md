@@ -1,37 +1,41 @@
-# 📊 Social Media Data Audit Pipeline
+# 📊 Social Media Audit Pipeline (Contingency Scraper)
 
-Um sistema autônomo e resiliente, desenvolvido em **Node.js** e operado em **Docker**, projetado para extrair, estruturar e auditar dados massivos de redes sociais, garantindo integridade, deduplicação e armazenamento seguro em bancos relacionais.
+Um *case* de Engenharia de Dados focado em **Continuidade de Negócio (Disaster Recovery)**. Este repositório documenta uma infraestrutura interna de coleta, armazenamento e auditoria de dados de redes sociais (OSINT) desenvolvida como plano de contingência durante a falha de um fornecedor terceirizado.
 
-## 🎯 O Problema
-A extração de grandes volumes de dados não-estruturados (como comentários e respostas em redes sociais) costuma falhar por limites de paginação ou perda de conexão. O desafio era criar um coletor próprio que superasse as limitações de ferramentas de mercado (como a HikerAPI), preservasse os dados e oferecesse um painel analítico para auditoria.
+## 🌐 O Contexto e o Incidente
+Durante uma operação crítica de auditoria de dados públicos (cruzamento massivo de comentários e perfis parlamentares no Instagram e X), a API comercial que utilizávamos (HikerAPI) apresentou uma falha silenciosa, deixando de retornar blocos inteiros de dados e quebrando a paginação. 
 
-## 🏗️ Arquitetura e Solução Técnica (Data Engineering)
-A solução foi arquitetada focando em resiliência, validação contínua (Checkpoints) e governança de dados.
+Para não paralisar a pesquisa e não perder o *timing* da coleta de dados, a equipe precisava de uma solução imediata.
 
-*   **Stack Backend/Coleta:** Node.js, Playwright, Chromium, hospedado em container Docker (Oracle Cloud).
-*   **Stack Frontend/Auditoria:** Painel de gestão desenvolvido com integração nativa ao Supabase.
-*   **Gestão de Dados:** Supabase (PostgreSQL) atuando como *Data Warehouse*, armazenando dados brutos e relacionais.
-*   **O Fluxo de Coleta:**
-    1.  **Varredura Remota:** O Playwright consulta as páginas via acesso remoto autenticado (noVNC), evitando bloqueios de *headless browsers*.
-    2.  **Gravação Contínua (Checkpoints):** Gravação de cursor e hashes de integridade, permitindo retomada exata em caso de falha.
-    3.  **Deduplicação:** União de passagens independentes, preservando apenas comentários exclusivos.
+## 🛠️ A Ação de Contingência (In-House Pipeline)
+Construímos e implementamos rapidamente um pipeline próprio de extração para contornar o bug da API terceirizada, reduzindo custos emergenciais e garantindo a continuidade do fluxo de dados.
 
-## 📈 Impacto e Capacidade Comprovada
-O painel de auditoria abaixo demonstra a escala do processamento de dados (mais de 96 mil comentários indexados e categorizados):
+*   **Stack de Extração (Backend):** Node.js, Playwright e Chromium operando dentro de um container Docker (Oracle Cloud).
+*   **Gestão de Estado e Resiliência:** Sistema de Checkpoints com gravação de hashes de integridade. Se a conexão caísse, o robô retomava exatamente do último comentário.
+*   **Gestão de Dados:** Supabase (PostgreSQL) atuando como *Data Warehouse* seguro para a estruturação relacional.
+*   **Deduplicação Inteligente:** Tratamento direto no banco de dados para evitar inserção de comentários repetidos durante as varreduras de segurança.
 
-*(Adicione aqui a imagem do seu Dashboard de Início, substituindo a URL abaixo pelo link gerado pelo GitHub após o upload)*
+## 📈 Resultados da Operação de Contingência
+Durante o período em que operou, a ferramenta absorveu a carga massiva com sucesso. O dashboard interno abaixo ilustra o volume processado (mais de 96 mil comentários validados):
+
+*(Adicione aqui a imagem do seu Dashboard de Início)*
 `![Dashboard de Auditoria](COLE_AQUI_O_LINK_DA_IMAGEM_DO_DASHBOARD)`
 
-## 🔍 Funcionalidades de Auditoria e Governança
+## 🔍 Auditoria, Cruzamento e Governança
 
-### Cruzamento Relacional (Autores e Expressões)
-O sistema não apenas coleta, mas estrutura os dados. É possível buscar ocorrências por autor, perfil, identificar comentários excluídos (tracking de indisponíveis) e reconstruir a árvore de conversas preservando o contexto original.
+### Rastreador Relacional e Reconstrução de Fios
+O sistema contornou as falhas da API cruzando dados entre plataformas e reconstruindo a árvore de comentários (identificando autores e *parent_ids*), o que permitiu recuperar o contexto das conversas e identificar postagens indisponíveis.
 
-*(Adicione aqui a imagem do Explorador ou de Autores)*
+*(Adicione aqui a imagem do Explorador de Posts ou Autores)*
 `![Exploração de Dados](COLE_AQUI_O_LINK_DA_IMAGEM_DO_EXPLORADOR)`
 
-### Exportação com Criptografia (SHA-256)
-Para uso em análises acadêmicas ou jurídicas, a plataforma garante a imutabilidade dos dados, exportando os lotes com registro de hash SHA-256, suportando múltiplos formatos (.xlsx, CSV, Parquet) e sorteios reprodutíveis.
+### Exportação Segura (SHA-256)
+Para garantir que a coleta emergencial mantivesse validade analítica e de auditoria, o sistema exportava os pacotes em CSV/.xlsx com geração automática de hash SHA-256 (garantia de imutabilidade).
 
 *(Adicione aqui a imagem da tela de Exportação)*
 `![Painel de Exportação e Hash](COLE_AQUI_O_LINK_DA_IMAGEM_DE_EXPORTACAO)`
+
+## 🏁 Desfecho e Maturidade de Software
+Durante a operação da nossa ferramenta, documentamos os *logs* do erro e acionamos o suporte técnico da HikerAPI. Após a equipe deles corrigir a falha estrutural do lado do servidor, **descontinuamos o uso deste scraper customizado**. 
+
+Esta decisão reflete uma cultura de **eliminação de débito técnico**: retornamos ao uso da API comercial estabilizada para manter a operação *Lean* (enxuta), comprovando a capacidade da equipe de construir soluções complexas sob demanda, mas mantendo a sabedoria de não manter código interno desnecessário quando o ecossistema terceirizado é normalizado.
