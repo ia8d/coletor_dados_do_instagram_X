@@ -1,41 +1,40 @@
-# 📊 Social Media Audit Pipeline (Contingency Scraper)
+# 📊 Social Media Audit Pipeline (OSINT & NLP Data Collector)
 
-Um *case* de Engenharia de Dados focado em **Continuidade de Negócio (Disaster Recovery)**. Este repositório documenta uma infraestrutura interna de coleta, armazenamento e auditoria de dados de redes sociais (OSINT) desenvolvida como plano de contingência durante a falha de um fornecedor terceirizado.
+Um *case* de Engenharia de Dados focado em **Continuidade de Pesquisa Científica (Disaster Recovery)**. Este repositório documenta uma infraestrutura interna de coleta, armazenamento e auditoria de dados de redes sociais, desenvolvida como plano de contingência para viabilizar uma pesquisa de **Doutorado em Sociologia**.
 
-## 🌐 O Contexto e o Incidente
-Durante uma operação crítica de auditoria de dados públicos (cruzamento massivo de comentários e perfis parlamentares no Instagram e X), a API comercial que utilizávamos (HikerAPI) apresentou uma falha silenciosa, deixando de retornar blocos inteiros de dados e quebrando a paginação. 
+## 🌐 O Contexto e o Desafio Científico
+O projeto visa coletar e estruturar uma base projetada em **mais de 500.000 comentários e respostas** de perfis parlamentares no Instagram e X (Twitter). 
 
-Para não paralisar a pesquisa e não perder o *timing* da coleta de dados, a equipe precisava de uma solução imediata.
+O objetivo analítico é alimentar modelos de processamento de linguagem natural (NLP) para mapear a **Violência Política de Gênero**, classificando comentários ofensivos e comparando a volumetria e o tom das ameaças direcionadas a candidatos homens versus candidatas mulheres. 
+
+Para a pesquisa acadêmica ter validade, a integridade dos dados coletados precisa ser absoluta. Quando a API terceirizada que utilizávamos (HikerAPI) apresentou falhas críticas de paginação e perda silenciosa de dados, a tese correu risco. 
 
 ## 🛠️ A Ação de Contingência (In-House Pipeline)
-Construímos e implementamos rapidamente um pipeline próprio de extração para contornar o bug da API terceirizada, reduzindo custos emergenciais e garantindo a continuidade do fluxo de dados.
+Para garantir o rigor metodológico e não perder dados vitais, construímos rapidamente um pipeline próprio de extração e auditoria.
 
 *   **Stack de Extração (Backend):** Node.js, Playwright e Chromium operando dentro de um container Docker (Oracle Cloud).
-*   **Gestão de Estado e Resiliência:** Sistema de Checkpoints com gravação de hashes de integridade. Se a conexão caísse, o robô retomava exatamente do último comentário.
+*   **Resiliência (Big Data):** Sistema de Checkpoints com gravação de cursor. Com uma volumetria projetada superior a meio milhão de registros, o robô foi arquitetado para retomar a extração exatamente do último ponto em caso de queda de conexão, sem duplicar dados.
 *   **Gestão de Dados:** Supabase (PostgreSQL) atuando como *Data Warehouse* seguro para a estruturação relacional.
-*   **Deduplicação Inteligente:** Tratamento direto no banco de dados para evitar inserção de comentários repetidos durante as varreduras de segurança.
 
-## 📈 Resultados da Operação de Contingência
-Durante o período em que operou, a ferramenta absorveu a carga massiva com sucesso. O dashboard interno abaixo ilustra o volume processado (mais de 96 mil comentários validados):
+## 📈 Escala da Operação (Dashboard)
+Durante a janela de contingência, o sistema orquestrou a captura e a auditoria em alta escala. O painel abaixo ilustra um recorte da volumetria estruturada (centenas de milhares de interações indexadas):
 
 *(Adicione aqui a imagem do seu Dashboard de Início)*
 `![Dashboard de Auditoria](COLE_AQUI_O_LINK_DA_IMAGEM_DO_DASHBOARD)`
 
-## 🔍 Auditoria, Cruzamento e Governança
+## 🔍 Rigor Metodológico e Governança
 
-### Rastreador Relacional e Reconstrução de Fios
-O sistema contornou as falhas da API cruzando dados entre plataformas e reconstruindo a árvore de comentários (identificando autores e *parent_ids*), o que permitiu recuperar o contexto das conversas e identificar postagens indisponíveis.
+### Reconstrução de Contexto (Fios de Conversa)
+Para classificar ameaças com precisão, o modelo precisa de contexto. O sistema reconstrói a árvore de comentários (identificando autores cruzados entre plataformas e *parent_ids*), permitindo analisar o gatilho de uma ofensa, mesmo que o post original seja apagado.
 
 *(Adicione aqui a imagem do Explorador de Posts ou Autores)*
 `![Exploração de Dados](COLE_AQUI_O_LINK_DA_IMAGEM_DO_EXPLORADOR)`
 
-### Exportação Segura (SHA-256)
-Para garantir que a coleta emergencial mantivesse validade analítica e de auditoria, o sistema exportava os pacotes em CSV/.xlsx com geração automática de hash SHA-256 (garantia de imutabilidade).
+### Cadeia de Custódia e Exportação (SHA-256)
+A validade de um Doutorado exige prova de que os dados não foram manipulados. O sistema conta com um módulo de exportação (.xlsx, CSV) que gera e registra um hash SHA-256 para cada lote, garantindo imutabilidade criptográfica para auditoria acadêmica.
 
 *(Adicione aqui a imagem da tela de Exportação)*
 `![Painel de Exportação e Hash](COLE_AQUI_O_LINK_DA_IMAGEM_DE_EXPORTACAO)`
 
 ## 🏁 Desfecho e Maturidade de Software
-Durante a operação da nossa ferramenta, documentamos os *logs* do erro e acionamos o suporte técnico da HikerAPI. Após a equipe deles corrigir a falha estrutural do lado do servidor, **descontinuamos o uso deste scraper customizado**. 
-
-Esta decisão reflete uma cultura de **eliminação de débito técnico**: retornamos ao uso da API comercial estabilizada para manter a operação *Lean* (enxuta), comprovando a capacidade da equipe de construir soluções complexas sob demanda, mas mantendo a sabedoria de não manter código interno desnecessário quando o ecossistema terceirizado é normalizado.
+Durante a operação, documentamos as falhas e acionamos o suporte técnico da HikerAPI. Após a correção estrutural pelo fornecedor, **descontinuamos o uso deste scraper customizado**. Esta decisão reflete maturidade executiva: evitamos o "Not Invented Here" (Síndrome do Não Inventado Aqui) e eliminamos débito técnico interno, comprovando a capacidade de construir soluções complexas sob demanda, mas mantendo a operação *Lean* ao retornar à API estabilizada.
