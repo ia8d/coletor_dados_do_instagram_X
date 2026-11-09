@@ -21,6 +21,7 @@ Para garantir o rigor metodológico e não perder dados vitais, construímos rap
 Durante a janela de contingência, o n8n orquestrou a captura em alta escala. O painel abaixo ilustra um recorte da volumetria estruturada (centenas de milhares de interações indexadas para o filtro de IA):
 
 
+**LINK DA IMAGEM:**
 `https://raw.githubusercontent.com/ia8d/coletor_dados_do_instagram_X/refs/heads/main/dados2.PNG)`
 
 ## 🔍 Rigor Metodológico e Governança
@@ -28,13 +29,13 @@ Durante a janela de contingência, o n8n orquestrou a captura em alta escala. O 
 ### Inteligência Relacional e Contexto para a IA
 Para classificar ameaças com precisão, a IA precisa de contexto completo. O sistema reconstrói a árvore de comentários (identificando autores cruzados entre plataformas e *parent_ids*), permitindo ao modelo de linguagem entender o gatilho exato de uma ofensa, mesmo que o post original tenha sido apagado.
 
-
+**LINK DA IMAGEM:**
 `https://github.com/ia8d/coletor_dados_do_instagram_X/blob/main/dados4.PNG?raw=true`
 
 ### Cadeia de Custódia e Exportação (SHA-256)
 A validade de um Doutorado exige prova de que os dados não foram manipulados (seja por falha humana ou alucinação da IA). O sistema conta com um módulo de exportação (.xlsx, CSV) que gera e registra um hash SHA-256 para cada lote, garantindo imutabilidade criptográfica para auditoria acadêmica.
 
-
+**LINK DA IMAGEM:**
 `https://github.com/ia8d/coletor_dados_do_instagram_X/blob/main/dados1.PNG?raw=true`
 
 ## 🏁 Desfecho e Maturidade de Software
