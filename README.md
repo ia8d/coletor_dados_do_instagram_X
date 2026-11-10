@@ -1,43 +1,42 @@
-# 📊 Social Media Audit Pipeline (PROJETO EM ANDAMENTO)
+📊 Coleta Parlamentar — Pipeline de Dados para Pesquisa Acadêmica
 
-Um *case* de Engenharia de Dados focado em **Continuidade de Pesquisa Científica**. Este repositório documenta uma infraestrutura interna de coleta, armazenamento e auditoria de dados de redes sociais, desenvolvida como plano de contingência para viabilizar uma pesquisa de **Doutorado em Sociologia**.
+🚧 Projeto em andamento. Infraestrutura de dados desenvolvida para apoiar uma pesquisa de Doutorado em Sociologia sobre violência política de gênero nas redes sociais. Por se tratar de pesquisa não publicada, o código-fonte, ainda são privados. Este repositório documenta apenas a arquitetura e as decisões de engenharia.
 
-## 🌐 O Contexto e o Desafio Científico
-O projeto visa coletar e estruturar uma base projetada em **mais de 500.000 comentários ,respostas e menções** de perfis parlamentares no Instagram e X (Twitter). 
+🎯 O problema
 
-O objetivo analítico é alimentar a base para mapear a **Violência Política de Gênero**. Para isso, integramos **Inteligência Artificial atuando como um filtro analítico autônomo**, processando o contexto massivo para classificar automaticamente comentários inofensivos versus discurso de ódio e ameaças direcionadas a candidatas e candidatos.
+A pesquisa precisa coletar posts, comentários, respostas e menções de perfis parlamentares no Instagram e no X (Twitter), em janelas de tempo definidas pela metodologia, e entregar esses dados às pesquisadoras de forma organizada, rastreável e auditável.
 
-Para a pesquisa acadêmica ter validade, a integridade dos dados coletados precisa ser absoluta. Quando a API terceirizada que utilizávamos (HikerAPI) apresentou falhas críticas de paginação e perda silenciosa de dados, a tese correu risco. 
+Durante a coleta, a API terceirizada que utilizávamos (HikerAPI) apresentou falhas de paginação e perda silenciosa de dados. Para uma tese, dado faltando sem aviso compromete a validade do estudo.
 
-## 🛠️ A Ação de Contingência
-Para garantir o rigor metodológico e não perder dados vitais, construímos rapidamente um pipeline próprio de extração e auditoria.
+🛠️ O que eu construí
+1. Coleta resiliente
+Orquestração no n8n: requisições, paginação, tratamento de erros e roteamento dos dados.
+Coleta com navegador automatizado: Node.js + Playwright + Chromium em container Docker (Oracle Cloud) para os pontos onde a API falhava.
+Checkpoints com cursor: se a coleta cai, ela retoma do último ponto salvo, sem duplicar registros.
+Banco: Supabase (PostgreSQL), modelando posts, comentários, respostas (com parent_id) e menções.
+2. Painel para as pesquisadoras
+Visão geral do andamento por janela de coleta (J1–J6 + janela extra) e por plataforma.
+Perfis: indicadores por parlamentar (posts, comentários, respostas, menções), com filtro por gênero e pareamento.
+Explorador de fios: leitura dos comentários em árvore (respeitando parent_id), com busca, filtros e anotações de campo registradas por usuário autenticado.
+Pseudonimização: autores de comentários sempre exibidos como pseudônimo.
+3. Rigor metodológico
+Exportação em Excel (conversa, dados brutos, anotações e classificações) e CSV.
+Hash SHA-256 por pacote exportado, registrado no banco: prova de que o arquivo analisado é o mesmo que foi gerado.
+Amostragem reproduzível: sorteio com seed salva, permitindo reproduzir exatamente a mesma amostra depois.
+Importação de codificação manual: as pesquisadoras classificam em planilha e o sistema importa e audita linhas inválidas.
 
-*   **Orquestração de Extração (n8n):** Todo o fluxo de requisições, controle de paginação, tratamento de erros e roteamento dos dados foi construído no **n8n**, garantindo uma governança visual e escalável do pipeline de mineração.
-*   **Stack de Execução (Backend):** Node.js, Playwright e Chromium operando dentro de um container Docker (Oracle Cloud) para renderização e coleta nas camadas onde as APIs falham.
-*   **Resiliência (Big Data):** Sistema de Checkpoints com gravação de cursor. Com uma volumetria projetada superior a meio milhão de registros, o robô retoma a extração exatamente do último ponto em caso de queda, sem duplicar dados no banco.
-*   **Gestão de Dados:** Supabase (PostgreSQL) atuando como *Data Warehouse* seguro para a estruturação relacional.
+A classificação dos comentários é feita manualmente pelas pesquisadoras (análise qualitativa). O papel do sistema é garantir que os dados cheguem completos, organizados e rastreáveis.
 
-## 📈 Escala da Operação 
-Durante a janela de contingência, o n8n orquestrou a captura em alta escala. O painel abaixo ilustra um recorte da volumetria estruturada (centenas de milhares de interações indexadas para o filtro de IA):
+📈 Volume atual (recorte do X)
+Métrica	Valor
+Contas monitoradas	32
+Posts coletados	~2,7 mil
+Comentários e respostas	~96 mil
+Menções	~18,8 mil
+🧱 Stack
 
+n8n · Node.js · Playwright · Docker · Oracle Cloud · Supabase (PostgreSQL) · <!-- TODO: stack do painel, ex.: React/Next.js -->
 
-**LINK DA IMAGEM:**
-`https://raw.githubusercontent.com/ia8d/coletor_dados_do_instagram_X/refs/heads/main/dados2.PNG)`
-
-## 🔍 Rigor Metodológico e Governança
-
-### Inteligência Relacional e Contexto para a IA
-Para classificar ameaças com precisão, a IA precisa de contexto completo. O sistema reconstrói a árvore de comentários (identificando autores cruzados entre plataformas e *parent_ids*), permitindo ao modelo de linguagem entender o gatilho exato de uma ofensa, mesmo que o post original tenha sido apagado.
-
-**LINK DA IMAGEM:**
-`https://github.com/ia8d/coletor_dados_do_instagram_X/blob/main/dados4.PNG?raw=true`
-
-### Cadeia de Custódia e Exportação (SHA-256)
-A validade de um Doutorado exige prova de que os dados não foram manipulados (seja por falha humana ou alucinação da IA). O sistema conta com um módulo de exportação (.xlsx, CSV) que gera e registra um hash SHA-256 para cada lote, garantindo imutabilidade criptográfica para auditoria acadêmica.
-
-**LINK DA IMAGEM:**
-`https://github.com/ia8d/coletor_dados_do_instagram_X/blob/main/dados1.PNG?raw=true`
-
-## 🏁 Desfecho e Maturidade de Software
-
-Durante a operação, documentamos as falhas e acionamos o suporte técnico da HikerAPI. Após a correção estrutural pelo fornecedor, **descontinuamos o uso deste pipeline customizado**. Esta decisão reflete maturidade executiva e eliminamos débito técnico interno, comprovando a capacidade de construir orquestrações complexas sob demanda, mas mantendo a operação rodando ao retornar à API estabilizada.
+🧠 O que aprendi
+Em pesquisa, dado faltando em silêncio é pior que erro explícito. Por isso checkpoints, auditoria de importação e hash.
+Construir a contingência e depois voltar para a API quando o fornecedor corrigiu foi uma decisão de reduzir manutenção, não de abandonar o projeto.
